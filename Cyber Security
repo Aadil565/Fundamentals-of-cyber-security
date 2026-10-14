@@ -1,0 +1,80 @@
+import streamlit as st
+
+st.set_page_config(page_title='CyberLearn', page_icon='🛡️', layout='wide')
+
+st.title('🛡️ CyberLearn: Fundamentals of Cyber Security')
+st.write('Learn cybersecurity concepts, recognize online threats, and build safer digital habits.')
+
+page = st.sidebar.radio('Navigate', ['Home', 'Learning Modules', 'Knowledge Quiz', 'Security Checklist', 'About'])
+
+modules = {
+    'Introduction to Cybersecurity': 'Cybersecurity protects computers, networks, applications, and data from unauthorized access and attacks.',
+    'CIA Triad': 'Confidentiality protects secrecy. Integrity protects accuracy. Availability ensures authorized users can access information when needed.',
+    'Common Cyber Threats': 'Malware, ransomware, phishing, social engineering, denial-of-service attacks, and insider threats are common security risks.',
+    'Password Security': 'Use long, unique passwords, a reputable password manager, and multifactor authentication (MFA).',
+    'Phishing Awareness': 'Watch for suspicious links, unexpected attachments, urgent demands, and requests for passwords or verification codes.',
+    'Network Security': 'Firewalls filter network traffic. HTTPS helps protect data in transit. Network segmentation limits unauthorized access.',
+    'Encryption Basics': 'Encryption transforms readable data into protected ciphertext using cryptographic methods and keys. Hashing serves different purposes, including integrity checks.',
+    'Safe Browsing and Privacy': 'Update software, download from trusted sources, review permissions, protect personal information, and back up important files.'
+}
+
+quiz = [
+    {'q': 'What does the CIA Triad stand for?', 'options': ['Cyber Intelligence Agency', 'Confidentiality, Integrity, Availability', 'Control, Inspection, Authentication'], 'answer': 'Confidentiality, Integrity, Availability'},
+    {'q': 'Which attack uses deceptive messages to steal credentials?', 'options': ['Phishing', 'Encryption', 'Backup'], 'answer': 'Phishing'},
+    {'q': 'What is a good password practice?', 'options': ['Reuse one password everywhere', 'Use unique passwords and MFA', 'Share passwords with friends'], 'answer': 'Use unique passwords and MFA'},
+    {'q': 'What does a firewall do?', 'options': ['Filters network traffic according to rules', 'Guarantees no malware exists', 'Makes every password stronger'], 'answer': 'Filters network traffic according to rules'},
+    {'q': 'Which security property protects data accuracy?', 'options': ['Availability', 'Integrity', 'Convenience'], 'answer': 'Integrity'}
+]
+
+if page == 'Home':
+    st.header('Welcome to CyberLearn')
+    st.markdown('Explore essential cybersecurity concepts through lessons, quizzes, and practical safety tips.')
+    c1, c2, c3 = st.columns(3)
+    c1.metric('Learning Modules', len(modules))
+    c2.metric('Quiz Questions', len(quiz))
+    c3.metric('Skill Level', 'Beginner')
+    st.subheader('Cybersecurity essentials')
+    st.markdown('- Use unique passwords and enable MFA.\n- Think before clicking links.\n- Keep your software updated.\n- Back up important files.\n- Protect sensitive information.')
+
+elif page == 'Learning Modules':
+    st.header('📚 Learning Modules')
+    topic = st.selectbox('Choose a topic', list(modules.keys()))
+    st.subheader(topic)
+    st.write(modules[topic])
+    st.info('Review each topic and then test your knowledge with the quiz.')
+
+elif page == 'Knowledge Quiz':
+    st.header('🧠 Cybersecurity Knowledge Quiz')
+    with st.form('quiz_form'):
+        answers = []
+        for i, question in enumerate(quiz):
+            st.markdown(f'**Question {i + 1}: {question["q"]}**')
+            answers.append(st.radio('Select your answer', question['options'], index=None, key=f'q_{i}'))
+        submitted = st.form_submit_button('Submit Quiz', type='primary')
+    if submitted:
+        score = sum(a == q['answer'] for a, q in zip(answers, quiz))
+        st.subheader(f'Your score: {score}/{len(quiz)}')
+        st.progress(score / len(quiz))
+        for i, (answer, question) in enumerate(zip(answers, quiz)):
+            with st.expander(f'Question {i + 1} explanation'):
+                st.write(f'Your answer: {answer or "Not answered"}')
+                st.write(f'Correct answer: {question["answer"]}')
+
+elif page == 'Security Checklist':
+    st.header('✅ Personal Security Checklist')
+    tasks = ['Use unique passwords', 'Enable MFA on important accounts', 'Update software regularly', 'Back up important files', 'Verify suspicious emails and links', 'Lock devices when not in use', 'Download software from trusted sources', 'Review privacy settings']
+    for task in tasks:
+        st.checkbox(task, key=task)
+    completed = sum(st.session_state.get(task, False) for task in tasks)
+    st.metric('Practices completed', f'{completed}/{len(tasks)}')
+    st.progress(completed / len(tasks))
+    st.caption('This checklist is educational and is not a formal security audit.')
+
+elif page == 'About':
+    st.header('About CyberLearn')
+    st.write('CyberLearn is a beginner-friendly cybersecurity education project built with Python and Streamlit.')
+    st.markdown('**Topics:** Information security, cyber threats, password safety, phishing, network security, encryption, and privacy.')
+    st.warning('This application is educational. It does not scan systems, perform penetration testing, or guarantee security.')
+
+st.sidebar.divider()
+st.sidebar.caption('CyberLearn | Learn safely. Stay secure.')
